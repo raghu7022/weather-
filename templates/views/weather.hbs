@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{>links}}
+</head>
+
+<body>
+    {{>navbar}}
+    <!-- main header -->
+    <div class="container-fluid main_header">
+        <div class="row">
+            <div class="col-md-10 col-12 mx-auto">
+
+                <div class="main_content">
+                    <form class="temp_form">
+                        <input type="text" id="cityName" placeholder="Enter ypour city name" autocomplete="off">
+                        <input type="submit" value="search" id="submitBtn">
+                    </form>
+                </div>
+                <div class="tempInformation">
+                    <div class="top_layer">
+                        <p id="day"> monday </p>
+                        {{!-- <p id="today_data">12 july</p> --}}
+                    </div>
+                    <div class="main_layer ">
+                        <p id="city_name">Get Output Here!!</p>
+                        <div class="middle_layer data_hide ">
+                            <p id="temp"> <span id="temp_real_val">0</span> <sup>o</sup>C</p>
+                            {{!-- <p id="temp_status"><i class="fa fa-cloud" aria-hidden="true"></i> </p> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const submitBtn = document.getElementById('submitBtn');
+        const cityName = document.getElementById('cityName');
+        const city_name = document.getElementById('city_name');
+        //const temp_status = document.getElementById('temp_status');
+        const temp_real_val = document.getElementById('temp_real_val');
+        const datahide = document.querySelector('.middle_layer');
+
+        const getInfo = async (event) => {
+            event.preventDefault();
+            const cityVal = cityName.value;
+            if (cityVal === "") {
+                city_name.innerText = `Plz write the name before search`;
+                datahide.classList.add('data_hide');
+            }
+            else {
+                try {
+                    let url = `http://api.openweathermap.org/data/2.5/weather?q=${cityVal}&units=metric&appid=ba9161097fc144798e928aed2ba24b89`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    const arrData = [data];
+
+                    city_name.innerText = `${arrData[0].name}, ${arrData[0].sys.country}`;
+                    temp_real_val.innerText = arrData[0].main.temp;
+                    //temp_status.innerText = arrData[0].weather[0].main;
+                    datahide.classList.remove('data_hide');
+                }
+                catch {
+                    city_name.innerText = `Plz enter valid city name`;
+                    datahide.classList.add('data_hide');
+                }
+
+            }
+
+        }
+
+        submitBtn.addEventListener('click', getInfo);
+
+        const getCurrentDay = () => {
+            let weekday = new Array(7);
+            weekday[0] = "Sunday";
+            weekday[1] = "Monday";
+            weekday[2] = "Tuesday";
+            weekday[3] = "Wednesday";
+            weekday[4] = "thursday";
+            weekday[5] = "Friday";
+            weekday[6] = "Satarday"
+
+            let currentTime = new Date();
+            days = weekday[currentTime.getDay()];
+            let day = document.getElementById('day');
+
+            day.innerText = days;
+        };
+        getCurrentDay();
+    </script>
+    <!-- footer code -->
+    {{>footer}}
+
+</body>
+
+</html>
